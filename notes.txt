@@ -1,0 +1,187 @@
+
+
+1. Zero Crossings
+
+	•	定义：计算信号在零值上下穿越的次数。
+	•	公式：￼
+	•	Python 实现：
+
+def zero_crossings(window, threshold=0.005):
+    return ((window[:-1] * window[1:] < 0) & (np.abs(window[:-1] - window[1:]) > threshold)).sum()
+
+
+
+2. Waveform Length
+
+	•	定义：信号在给定窗口内的绝对幅值变化总和。
+	•	公式：￼
+	•	Python 实现：
+
+def waveform_length(window):
+    return np.sum(np.abs(np.diff(window)))
+
+
+
+3. Diff Absolute Standard Deviation (diff_abs_std_dev)
+
+	•	定义：信号相邻样本差的绝对值的标准差。
+	•	公式：￼
+	•	Python 实现：
+
+def diff_abs_std_dev(window):
+    return np.std(np.abs(np.diff(window)))
+
+
+
+4. Integral Absolute Value
+
+	•	定义：信号在时间窗口内的绝对值之和。
+	•	公式：￼
+	•	Python 实现：
+
+def integral_absolute_value(window):
+    return np.sum(np.abs(window))
+
+
+
+5. Log Detector
+
+	•	定义：计算信号的对数平均。
+	•	公式：￼
+	•	Python 实现：
+
+def log_detector(window):
+    return np.exp(np.mean(np.log(np.abs(window) + 1e-10)))  # 1e-10 避免 log(0)
+
+
+
+6. Mean Absolute Value
+
+	•	定义：计算信号的绝对值的平均值。
+	•	公式：￼
+	•	Python 实现：
+
+def mean_absolute_value(window):
+    return np.mean(np.abs(window))
+
+
+
+7. Root Mean Square (RMS)
+
+	•	定义：信号的平方均值的平方根。
+	•	公式：￼
+	•	Python 实现：
+
+def root_mean_square(window):
+    return np.sqrt(np.mean(window ** 2))
+
+
+
+8. Absolute Temporal Moment
+
+	•	定义：信号绝对值的二次方的均值。
+	•	公式：￼
+	•	Python 实现：
+
+def absolute_temporal_moment(window):
+    return np.mean(np.abs(window)**2)
+
+
+
+9. Variance
+
+	•	定义：信号的方差。
+	•	公式：￼
+	•	Python 实现：
+
+def variance(window):
+    return np.var(window)
+
+
+
+10. V-order (v_order)
+
+	•	定义：信号的 v 阶矩。
+	•	公式：￼
+	•	Python 实现：
+
+def v_order(window, order=3):
+    return np.mean(np.abs(window) ** order)
+
+
+
+11. Mean Frequency
+
+	•	定义：频域内的加权平均频率。
+	•	公式：￼
+	•	Python 实现：
+
+def mean_frequency(window):
+    freq_domain = np.fft.fft(window)
+    magnitudes = np.abs(freq_domain)
+    frequencies = np.fft.fftfreq(len(window))
+    return np.sum(frequencies * magnitudes) / np.sum(magnitudes)
+
+
+
+12. Maximum Amplitude
+
+	•	定义：信号的最大绝对值。
+	•	公式：￼
+	•	Python 实现：
+
+def maximum_amplitude(window):
+    return np.max(np.abs(window))
+
+
+
+13. Peak Frequency
+
+	•	定义：频域中的主频率。
+	•	公式：￼，其中 ￼ 是对应于最大幅值的频率。
+	•	Python 实现：
+
+def peak_frequency(window):
+    freq_domain = np.fft.fft(window)
+    magnitudes = np.abs(freq_domain)
+    frequencies = np.fft.fftfreq(len(window))
+    peak_idx = np.argmax(magnitudes)
+    return frequencies[peak_idx]
+
+
+
+14. Mean Power
+
+	•	定义：信号的均方值。
+	•	公式：￼
+	•	Python 实现：
+
+def mean_power(window):
+    return np.mean(np.abs(window) ** 2)
+
+
+
+15. Total Power
+
+	•	定义：信号的总功率。
+	•	公式：￼
+	•	Python 实现：
+
+def total_power(window):
+    return np.sum(np.abs(window) ** 2)
+
+
+
+16. Variance Central Frequency
+
+	•	定义：每个频率与均值频率之差的平方的加权平均。
+	•	公式：￼
+	•	Python 实现：
+
+def variance_central_frequency(window):
+    freq_domain = np.fft.fft(window)
+    magnitudes = np.abs(freq_domain)
+    frequencies = np.fft.fftfreq(len(window))
+    mean_freq = mean_frequency(window)
+    return np.sum(magnitudes * (frequencies - mean_freq) ** 2) / np.sum(magnitudes)
+
