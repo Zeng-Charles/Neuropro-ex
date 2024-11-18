@@ -107,6 +107,90 @@ def remove_feature(correlation_matrix, threshold = 0.9):
     return corr_reduced, highly_correlated_features, selected_features
 
 
+def calculate_feature_importance(selected_features, label, feature_names=None, top_n=4):
+    """
+    calculate feature importance and histogram
+
+    input:
+        selected_features (np.array):  (num_windows, num_features, num_channels)。
+        num_channels (int): 
+        num_features (int): 
+        lable (np.array):
+        feature_names (list[str]): names of features
+        top_n (int): number of importance features
+
+    return:
+        global_feature_importances (np.array): 
+        top_features_indices (np.array): 
+        top_features_importance (np.array): 
+    """
+    num_windows,num_features,num_channels = selected_features.shape
+
+    global_feature_importances = np.zeros(num_features)
+
+    for channel in range(num_channels):
+        X_channel = selected_features[:, :, channel]
+
+        scaler = StandardScaler()
+        X_scaled = scaler.fit_transform(X_channel)
+
+        model = SVC(kernel='rbf', random_state=42)
+        model.fit(X_scaled, label)
+
+        result = permutation_importance(
+            model, X_scaled, label, scoring='accuracy', n_repeats=10, random_state=42
+        )
+
+        global_feature_importances += result.importances_mean
+
+    global_feature_importances /= num_channels
+
+    top_features_indices = np.argsort(global_feature_importances)[-top_n:][::-1]
+    top_features_importance = global_feature_importances[top_features_indices]
+
+    print("Top Features:")
+    for i, (index, importance) in enumerate(zip(top_features_indices, top_features_importance)):
+        print(f"Feature {index}: Importance = {importance:.4f}")
+
+    plot_feature_importance(
+        global_feature_importances, 
+        top_features_indices, 
+        top_features_importance, 
+        feature_names
+    )
+
+    return global_feature_importances, top_features_indices, top_features_importance
+
+
+def plot_feature_importance(global_feature_importances, top_features_indices, top_features_importance, feature_names=None):
+    """
+    plot feature importance histogram
+
+    input：
+        global_feature_importances (np.array): 
+        top_features_indices (np.array): 
+        top_features_importance (np.array): 
+        feature_names (list[str]): 
+    """
+    num_features = len(global_feature_importances)
+
+    # 如果没有提供特征名称，则使用索引
+    if feature_names is None:
+        feature_names = [f'Feature {i}' for i in range(num_features)]
+
+    plt.figure(figsize=(12, 6))
+    plt.bar(range(num_features), global_feature_importances, color='lightblue', edgecolor='black')
+    plt.bar(top_features_indices, top_features_importance, color='orange', edgecolor='black')
+
+    plt.xlabel('Feature Names')
+    plt.ylabel('Importance')
+    plt.title('Feature Importance Histogram')
+    plt.xticks(range(num_features), feature_names, rotation=45, ha='right')
+    plt.legend(['Other Features', 'Top Features'])
+    plt.tight_layout()
+    plt.show()
+
+
 
 
 if __name__ == "__main__":
@@ -116,6 +200,8 @@ if __name__ == "__main__":
     cutoff_freq = 50.0
 
     # get all_window in shape [num_window, sampling points, num_channel]
+    label_maintenance = np.loadtxt('label_maintenance.txt', delimiter=',')
+
     pn_dir = 'hd-semg/1.0.0/pr_dataset/subject01_session1'
     num_samples = 9
 
@@ -133,14 +219,14 @@ if __name__ == "__main__":
     print("all_window.shape:", all_window.shape)
 
     # plot the first channel of the first window
-    window1_channel1 = all_window[0, :, 0]
-    sampling_rate = 2048  # Hz
-    N = window1_channel1.shape[0]  # num of window
-    time = 1000.00 * np.arange(N) / sampling_rate # ms
-    plt.title("First Window, First Channel Data")
-    plt.xlabel("Time(/ms)")
-    plt.ylabel("Amplitude")
-    plt.plot(time, window1_channel1)
+    # window1_channel1 = all_window[0, :, 0]
+    # sampling_rate = 2048  # Hz
+    # N = window1_channel1.shape[0]  # num of window
+    # time = 1000.00 * np.arange(N) / sampling_rate # ms
+    # plt.title("First Window, First Channel Data")
+    # plt.xlabel("Time(/ms)")
+    # plt.ylabel("Amplitude")
+    # plt.plot(time, window1_channel1)
     # plt.show()
 
     # get features
@@ -179,15 +265,16 @@ if __name__ == "__main__":
     # plt.show()
 
     corr_reduced, removed_features_name, selected_features_name = remove_feature(correlation_matrix, threshold=0.9)
-    sns.heatmap(corr_reduced, annot=True, cmap='coolwarm')
-    plt.xticks(rotation=45, ha='right')
-    plt.yticks(rotation=45, ha='right')
-    plt.show()
+    # sns.heatmap(corr_reduced, annot=True, cmap='coolwarm')
+    # plt.xticks(rotation=45, ha='right')
+    # plt.yticks(rotation=45, ha='right')
+    # plt.show()
 
     selected_features_index = [feature_names.index(name) for name in selected_features_name]
     selected_features = all_windows_features[:, selected_features_index, :]
 
     print(selected_features.shape)
 
-    # get most relevant features
-    
+    num_windows, num_features, num_channels = selected_features.shape
+    label = np.array([1] * 162 + [2] * 162)
+    calculate_feature_importance(selected_features,label, selected_features_name)

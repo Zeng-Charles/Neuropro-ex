@@ -1,7 +1,8 @@
 import numpy as np
 
-data = np.array
+import numpy as np
 
-correlationmatrix  = np.corrcoef(data,data.T)
-
-print(correlationmatrix)
+# 假设 txt 文件名为 'data.txt'
+data = np.loadtxt('label_maintenance.txt', delimiter=',')
+print(data)
+print(data.shape)
