@@ -150,7 +150,8 @@ def calculate_feature_importance(selected_features, label, feature_names=None, t
 
     print("Top Features:")
     for i, (index, importance) in enumerate(zip(top_features_indices, top_features_importance)):
-        print(f"Feature {index}: Importance = {importance:.4f}")
+        feature_name = feature_names[index] if feature_names is not None else f"Feature {index}"
+        print(f"{i+1}. {feature_name}: Importance = {importance:.4f}")
 
     plot_feature_importance(
         global_feature_importances, 
@@ -275,6 +276,5 @@ if __name__ == "__main__":
 
     print(selected_features.shape)
 
-    num_windows, num_features, num_channels = selected_features.shape
     label = np.array([1] * 162 + [2] * 162)
     calculate_feature_importance(selected_features,label, selected_features_name)
