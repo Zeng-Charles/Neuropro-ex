@@ -167,7 +167,7 @@ def plot_feature_importance(global_feature_importances, top_features_indices, to
     """
     plot feature importance histogram
 
-    input：
+    input:
         global_feature_importances (np.array): 
         top_features_indices (np.array): 
         top_features_importance (np.array): 
