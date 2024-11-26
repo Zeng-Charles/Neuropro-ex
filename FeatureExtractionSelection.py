@@ -40,6 +40,7 @@ def extract_windows(data, window_size=100, overlap=0.5):
     return windows
 
 def process_all_data(data_list):
+
     """
     process all data and return processed data in 3D。
     
@@ -58,6 +59,32 @@ def process_all_data(data_list):
     all_windows = np.concatenate(all_windows, axis=0)
     
     return all_windows
+
+def compute_force_labels(force_data, window_size=100, overlap=0.5):
+    """
+    calculate mean of force for each windows as lable
+    
+    input:
+    - force_data: force (shape: [num_samples, num_channels])
+    - window_size: size of window (int)
+    - overlap: overlap (float)
+    
+    return:
+    - force_labels: mean of force (shape: [num_windows, num_channels])
+    """
+    step_size = int(window_size * (1 - overlap))
+
+    num_samples= len(force_data)
+    num_windows = (num_samples - window_size) // step_size + 1
+
+    force_labels = np.zeros((num_windows))
+
+    for i in range(num_windows):
+        start = i * step_size
+        end = start + window_size
+        force_labels[i] = np.mean(force_data[start:end])
+    
+    return force_labels
 
 def compute_correlation_matrix(data):
     """
