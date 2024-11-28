@@ -9,7 +9,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from sklearn.preprocessing import StandardScaler
 
-import dataprocess
+from SignalFiltering import signal_filtering
 from FeatureExtractionSelection import process_all_data
 from FeatureExtractionSelection import compute_force_labels
 from cal_features import calculate_features
@@ -43,7 +43,7 @@ if __name__ == "__main__":
     lowcut = 10.0
     highcut = 500.0
     cutoff_freq = 50.0
-    processed_data = dataprocess.dataprocess(emg_data, lowcut, highcut, cutoff_freq, emg.fs)
+    processed_data = signal_filtering(emg_data, lowcut, highcut, cutoff_freq, emg.fs)
 
     # extract windows
     data_list = [processed_data]

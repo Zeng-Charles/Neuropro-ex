@@ -9,7 +9,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.tree import plot_tree
 
-import dataprocess
+from SignalFiltering import signal_filtering
 from FeatureExtractionSelection import process_all_data
 from cal_features import calculate_features
 
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     for i in [1, 3, 5, 7, 9]:
         sample_name = f"maintenance_raw_sample{i}"
         record = wfdb.rdrecord(sample_name, pn_dir=pn_dir)
-        processed_data = dataprocess.dataprocess(record.p_signal, lowcut, highcut, cutoff_freq, record.fs)
+        processed_data = signal_filtering(record.p_signal, lowcut, highcut, cutoff_freq, record.fs)
         data_list.append(processed_data)  
 
 

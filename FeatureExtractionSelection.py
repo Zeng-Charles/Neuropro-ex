@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import wfdb
 import pandas as pd
-import dataprocess
 import numpy as np
 import seaborn as sns
+
+from SignalFiltering import signal_filtering
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.inspection import permutation_importance
@@ -239,7 +240,7 @@ if __name__ == "__main__":
         sample_name = f"maintenance_raw_sample{i}"
         record = wfdb.rdrecord(sample_name, pn_dir=pn_dir)
         print(record.p_signal.shape)
-        processed_data = dataprocess.dataprocess(record.p_signal, lowcut, highcut, cutoff_freq, record.fs)
+        processed_data = signal_filtering(record.p_signal, lowcut, highcut, cutoff_freq, record.fs)
         data_list.append(processed_data)  
 
 

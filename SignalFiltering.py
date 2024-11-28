@@ -32,7 +32,7 @@ def plot_frequency_spectrum(signal, fs, title="Frequency Spectrum"):
     plt.grid(True)
     plt.show()
 
-def dataprocess(data, lowcut, highcut, cutoff_freq, fs):
+def signal_filtering(data, lowcut, highcut, cutoff_freq, fs):
     processed_data= np.zeros_like(data)
 
     for channel in range(data.shape[1]):
