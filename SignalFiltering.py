@@ -30,7 +30,35 @@ def plot_frequency_spectrum(signal, fs, title="Frequency Spectrum"):
     plt.xlabel("Frequency (Hz)")
     plt.ylabel("Amplitude")
     plt.grid(True)
-    plt.show()
+    # plt.show()
+
+def plot_frequency_spectrum_with_highlight(signal, fs, lowcut=None, highcut=None, notch_freq=None, title="Frequency Spectrum"):
+    if isinstance(signal, pd.Series):
+        signal = pd.to_numeric(signal, errors='coerce').fillna(0).values.astype(float)  # if data is pd series
+    n = len(signal)
+    freqs = np.fft.fftfreq(n, 1 / fs)
+    fft_vals = np.fft.fft(signal)
+
+    plt.plot(freqs[:n // 2], np.abs(fft_vals[:n // 2]), label="Filtered Signal")
+    plt.title(title)
+    plt.xlabel("Frequency (Hz)")
+    plt.ylabel("Amplitude")
+    plt.grid(True)
+
+    # Highlight low-frequency removal
+    if lowcut:
+        plt.axvspan(0, lowcut, color='red', alpha=0.3, label=f"Low-pass Removed (<{lowcut} Hz)")
+
+    # Highlight high-frequency removal
+    if highcut:
+        plt.axvspan(highcut, fs / 2, color='blue', alpha=0.3, label=f"High-pass Removed (>{highcut} Hz)")
+
+    # Highlight notch frequency removal
+    if notch_freq:
+        plt.axvline(notch_freq, color='green', linestyle='--', label=f"Notch Filter @ {notch_freq} Hz")
+        plt.axvspan(notch_freq - 5, notch_freq + 5, color='green', alpha=0.3, label="Notch Filter Band")
+
+    plt.legend()
 
 def signal_filtering(data, lowcut, highcut, cutoff_freq, fs):
     processed_data= np.zeros_like(data)
@@ -48,8 +76,8 @@ def signal_filtering(data, lowcut, highcut, cutoff_freq, fs):
 
 if __name__ == "__main__":
     #read data
-    emg_data = pd.read_csv('extension_data.csv')
-    print(emg_data.shape)
+    emg_data = pd.read_csv('data/extension_data.csv')
+    print('emg_data.shape:',emg_data.shape)
 
     # get first channel
     emg_channel1 = emg_data.iloc[0]
@@ -63,21 +91,14 @@ if __name__ == "__main__":
     bandpass_filtered_data = pd.DataFrame(index=emg_data.index, columns=emg_data.columns)
     for index in range(emg_data.shape[0]):
         bandpass_filtered_data.iloc[index] = bandpass_filter(emg_data.iloc[index],lowcut, highcut, sampling_rate)
-    # filtedData = data.apply(lambda x: bandpass_filter(x.values, lowcut, highcut, sampling_rate), axis=1)
-    # filtedData = pd.DataFrame(filtedData.tolist())
+    print('bandpass_filtered_data.shape', bandpass_filtered_data.shape)
+
     notch_freq = 50.0
     notch_filtered_data = pd.DataFrame(index=bandpass_filtered_data.index, columns=bandpass_filtered_data.columns)
     for index in range(bandpass_filtered_data.shape[0]):
         notch_filtered_data.iloc[index] = notch_filter(bandpass_filtered_data.iloc[index], notch_freq, sampling_rate)
-    print(notch_filtered_data.shape)
+    print('notch_filtered_data.shape:', notch_filtered_data.shape)
 
-
-    plt.figure(num="Frequency_spectrum")
-    plt.subplot(2,1,1)
-    plot_frequency_spectrum(emg_channel1, sampling_rate, "EMG_Channel1_Raw_Frequency_spectrum")
-    plt.subplot(2,1,2)
-    plot_frequency_spectrum(notch_filtered_data.iloc[0], sampling_rate, "EMG_Channel1_filtered_Frequency_spectrum")
-    plt.subplots_adjust(hspace=0.5)
 
     plt.figure(num="ENG_Value")  
     plt.plot(time, emg_channel1)
@@ -85,7 +106,24 @@ if __name__ == "__main__":
     plt.xlabel("Time (seconds)")  
     plt.ylabel("EMG Value")  
     plt.grid(True) 
+
+    # plt.figure(num="Frequency_spectrum")
+    # plt.subplot(2,1,1)
+    # plot_frequency_spectrum(emg_channel1, sampling_rate, "EMG_Channel1_Raw_Frequency_spectrum")
+    # plt.subplot(2,1,2)
+    # plot_frequency_spectrum(notch_filtered_data.iloc[0], sampling_rate, "EMG_Channel1_filtered_Frequency_spectrum")
+    # plt.subplots_adjust(hspace=0.5)
+    # plt.show()
+
+    plt.figure(num="Frequency_spectrum")
+    plt.subplot(2, 1, 1)
+    plot_frequency_spectrum_with_highlight(emg_channel1, sampling_rate, lowcut=lowcut, highcut=highcut, notch_freq=notch_freq, title="EMG_Channel1_Raw_Frequency_spectrum")
+    plt.subplot(2, 1, 2)
+    plot_frequency_spectrum_with_highlight(notch_filtered_data.iloc[0], sampling_rate, lowcut=lowcut, highcut=highcut, notch_freq=notch_freq, title="EMG_Channel1_Filtered_Frequency_spectrum")
+    plt.subplots_adjust(hspace=0.5)
     plt.show()
+
+
 
 
 

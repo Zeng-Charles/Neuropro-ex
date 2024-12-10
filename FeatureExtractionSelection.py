@@ -279,6 +279,26 @@ if __name__ == "__main__":
     "variance_central_frequency"
     ]
 
+
+    feature_names_short = [
+    "ZC",     # zero_crossings
+    "WL",     # waveform_length
+    "DASD",   # diff_abs_std_dev
+    "IAV",    # integral_absolute_value
+    "LD",     # log_detector
+    "MAV",    # mean_absolute_value
+    "RMS",    # root_mean_square
+    "ATM",    # absolute_temporal_moment
+    "VAR",    # variance
+    "VO",     # v_order
+    "MF",     # mean_frequency
+    "MAXA",   # maximum_amplitude
+    "PF",     # peak_frequency
+    "MP",     # mean_power
+    "TP",     # total_power
+    "VCF"     # variance_central_frequency
+    ]
+
     all_windows_features = calculate_features(all_window, feature_names)
 
     print("all_windows_features.shape: ",all_windows_features.shape)

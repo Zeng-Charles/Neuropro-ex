@@ -89,7 +89,7 @@ if __name__ == "__main__":
     
     elif index =='rf':
         #random forest
-        model = RandomForestClassifier()
+        model = RandomForestClassifier(n_estimators=100, random_state=42)
         model.fit(train_data, train_label)
 
         accuracy = model.score(test_data, test_label)

@@ -33,10 +33,10 @@ if __name__ == "__main__":
     interp_func = interp1d(original_time, force_data, axis=0, kind='cubic') #'linear' / 'cubic'
     upsampled_force = interp_func(target_time)
 
-    # print(upsampled_force.shape)
-    # plt.plot(original_time, force_data[:, 0], label="Original Data", marker='o')
-    # plt.plot(target_time, upsampled_force[:, 0], label="Interpolated Data")
-    # plt.legend()
+    print(f"Upsampled force shape: {upsampled_force.shape}")
+    plt.plot(original_time, force_data, label="Original Data", marker='o')
+    plt.plot(target_time, upsampled_force, label="Interpolated Data")
+    plt.legend()
     # plt.show()
 
     # filter data
